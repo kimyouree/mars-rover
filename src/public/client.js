@@ -66,9 +66,12 @@ const Greeting = (name) => {
 // *** Example of a pure function that renders infomation requested from the backend
 // *** BUG: apod.date is `undefined` - why?
 const ImageOfTheDay = (apod) => {
+  console.log(apod, " === apod");
   const today = new Date();
   const photodate = new Date(apod.date);
+  console.log(photodate.getDate(), today.getDate());
 
+  console.log(photodate.getDate() === today.getDate());
   if (!apod || apod.date === today.getDate()) {
     getImageOfTheDay(store);
   }
@@ -93,7 +96,6 @@ const ImageOfTheDay = (apod) => {
 // Example API call
 const getImageOfTheDay = (state) => {
   let { apod } = state;
-  //   console.log(apod, " ==== apod");
 
   fetch(`http://localhost:3000/apod`)
     .then((res) => res.json())
