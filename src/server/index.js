@@ -27,4 +27,6 @@ app.get("/apod", async (req, res) => {
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+// BUGS SQUASHED
+
+// BUG: response was `undefined` bc return keyword was missing

@@ -64,7 +64,7 @@ const Greeting = (name) => {
 };
 
 // *** Example of a pure function that renders infomation requested from the backend
-// *** BUG: apod.date is `undefined` - why?
+// *** TRANSIENT BUG: apod.date is `undefined` sometimes - why?
 const ImageOfTheDay = (apod) => {
   console.log(apod, " === apod");
   const today = new Date();
