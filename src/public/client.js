@@ -2,6 +2,7 @@ let store = {
   user: { name: "Student" },
   apod: "",
   rovers: ["Curiosity", "Opportunity", "Spirit"],
+  rovers_info: null,
 };
 
 // add our markup to the page
@@ -19,7 +20,7 @@ const render = async (root, state) => {
 
 // create content
 const App = (state) => {
-  let { rovers, apod, manifests } = state;
+  let { rovers, apod, rovers_info } = state;
 
   return `
         <header></header>
@@ -39,7 +40,7 @@ const App = (state) => {
                 ${ImageOfTheDay(apod)}
             </section>
             <section>
-              ${manifestGallery(manifests)}
+              ${manifestGallery(rovers_info)}
             </section>
         </main>
         <footer></footer>
@@ -93,17 +94,15 @@ const ImageOfTheDay = (apod) => {
   }
 };
 
-const manifestGallery = (manifest) => {
-  if (!manifest) {
+const manifestGallery = (rovers_info) => {
+  if (!rovers_info) {
     getManifests(store);
-    console.log(store, " ==== store manifests inside if");
-  } else {
-    console.log(!manifest, " ==== store manifest outside if");
+    console.log(store, " ==== rover_info inside if");
   }
 
   return `
     <h2>GALLERY</h2>
-    <img src="${manifest.curiosity_images.photos[0]}" />
+    <img src="${rovers_info.curiosity.curiosity_images.photos[0].img_src}" />
   `;
 };
 
@@ -122,12 +121,11 @@ const getImageOfTheDay = (state) => {
 
 // Manifests API call
 const getManifests = (state) => {
-  let { manifests } = state;
+  let { rovers_info } = state;
 
   fetch(`http://localhost:3000/photos`)
     .then((res) => res.json())
-    .then((manifest) => {
-      return updateStore(store, { manifests: manifest });
-    })
-    .then((m) => console.log(m, " ==== m"));
+    .then((rovers_info) => {
+      return updateStore(store, { rovers_info: rovers_info });
+    });
 };
