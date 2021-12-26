@@ -19,7 +19,7 @@ const render = async (root, state) => {
 
 // create content
 const App = (state) => {
-  let { rovers, apod } = state;
+  let { rovers, apod, manifests } = state;
 
   return `
         <header></header>
@@ -37,6 +37,9 @@ const App = (state) => {
                     but generally help with discoverability of relevant imagery.
                 </p>
                 ${ImageOfTheDay(apod)}
+            </section>
+            <section>
+              ${manifestGallery(manifests)}
             </section>
         </main>
         <footer></footer>
@@ -66,7 +69,6 @@ const Greeting = (name) => {
 // *** Example of a pure function that renders infomation requested from the backend
 // *** TRANSIENT BUG: apod.date is `undefined` sometimes - why?
 const ImageOfTheDay = (apod) => {
-  console.log(apod, " === apod");
   const today = new Date();
   const photodate = new Date(apod.date);
   console.log(photodate.getDate(), today.getDate());
@@ -91,9 +93,23 @@ const ImageOfTheDay = (apod) => {
   }
 };
 
+const manifestGallery = (manifest) => {
+  if (!manifest) {
+    getManifests(store);
+    console.log(store, " ==== store manifests inside if");
+  } else {
+    console.log(!manifest, " ==== store manifest outside if");
+  }
+
+  return `
+    <h2>GALLERY</h2>
+    <img src="${manifest.curiosity_images.photos[0]}" />
+  `;
+};
+
 // ------------------------------------------------------  API CALLS
 
-// Example API call
+// Apod API call
 const getImageOfTheDay = (state) => {
   let { apod } = state;
 
@@ -102,6 +118,16 @@ const getImageOfTheDay = (state) => {
     .then((apod) => {
       return updateStore(store, { apod: apod.image });
     });
+};
 
-  // return data;
+// Manifests API call
+const getManifests = (state) => {
+  let { manifests } = state;
+
+  fetch(`http://localhost:3000/photos`)
+    .then((res) => res.json())
+    .then((manifest) => {
+      return updateStore(store, { manifests: manifest });
+    })
+    .then((m) => console.log(m, " ==== m"));
 };
