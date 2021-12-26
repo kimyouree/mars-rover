@@ -85,3 +85,6 @@ app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 // BUGS SQUASHED
 
 // BUG: response was `undefined` bc return keyword was missing
+// PROBLEM: making a concise set of GET requests;
+//    1 to fetch the max_date from the manifest endpoint
+//    2. to fetch the most recent photos from each rover using the max_date from the previous GET request
