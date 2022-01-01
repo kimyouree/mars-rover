@@ -54,9 +54,6 @@ const App = (state) => {
                 </p>
                 ${ImageOfTheDay(apod)}
             </section>
-            <section>
-              ${manifestGallery(rovers_info)}
-            </section>
         </main>
         <footer></footer>
     `;
