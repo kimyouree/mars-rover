@@ -25,7 +25,10 @@ const App = (state) => {
   return `
         <header></header>
         <main>
+        <section class="section">
             ${Greeting(store.user.name)}
+          <h2 class="bold subtitle has-background-link-dark">Gallery</h2>
+          
           <div class="tabs is-centered is-large">
             <ul>
               <li>Rovers</li>
@@ -34,6 +37,10 @@ const App = (state) => {
               <li><a>Spirit</a></li>
             </ul>
           </div>
+          ${manifestGallery(rovers_info)}
+        </section>
+          <section class="section">
+            <h3 class="subtitle has-background-link-dark">Put things on the page!</h3>
                 <p>Here is an example section.</p>
                 <p>
                     One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
@@ -64,12 +71,12 @@ window.addEventListener("load", () => {
 const Greeting = (name) => {
   if (name) {
     return `
-            <h1>Welcome, ${name}!</h1>
+            <h1 class="title">Welcome, ${name}!</h1>
         `;
   }
 
   return `
-        <h1>Hello!</h1>
+        <h1 class="title">Hello!</h1>
     `;
 };
 
@@ -103,7 +110,7 @@ const ImageOfTheDay = (apod) => {
 const manifestGallery = (rovers_info) => {
   if (!rovers_info) {
     getManifests(store);
-    console.log(store, " ==== rover_info inside if");
+    return `<section class="section">Loading latest images...</section>`;
   }
 
   return `
