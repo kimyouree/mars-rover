@@ -28,7 +28,7 @@ const App = (state) => {
         <header></header>
         <main>
         <section class="section">
-            ${Greeting(store.user.name)}
+          ${Greeting(store.user.name)}
           <h2 class="bold subtitle has-background-link-dark">Gallery</h2>
           
           <div class="tabs is-centered is-large">
@@ -43,17 +43,17 @@ const App = (state) => {
         </section>
           <section class="section">
             <h3 class="subtitle has-background-link-dark">Put things on the page!</h3>
-                <p>Here is an example section.</p>
-                <p>
-                    One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
-                    the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
-                    This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
-                    applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
-                    explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
-                    but generally help with discoverability of relevant imagery.
-                </p>
-                ${ImageOfTheDay(apod)}
-            </section>
+            <p>Here is an example section.</p>
+            <p>
+                One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
+                the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
+                This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
+                applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
+                explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
+                but generally help with discoverability of relevant imagery.
+            </p>
+            ${ImageOfTheDay(apod)}
+          </section>
         </main>
         <footer></footer>
     `;
@@ -84,9 +84,9 @@ const Greeting = (name) => {
 const ImageOfTheDay = (apod) => {
   const today = new Date();
   const photodate = new Date(apod.date);
-  console.log(photodate.getDate(), today.getDate());
+  // console.log(photodate.getDate(), today.getDate());
 
-  console.log(photodate.getDate() === today.getDate());
+  // console.log(photodate.getDate() === today.getDate());
   if (!apod || apod.date === today.getDate()) {
     getImageOfTheDay(store);
   }
@@ -148,9 +148,11 @@ const getImageOfTheDay = (state) => {
     .then((apod) => {
       return updateStore(store, { apod: apod.image });
     });
+
+  // return data;
 };
 
-// Manifests API call
+// Photo gallery API call
 const getManifests = (state) => {
   let { rovers_info } = state;
 
@@ -160,3 +162,12 @@ const getManifests = (state) => {
       return updateStore(store, { rovers_info: rovers_info });
     });
 };
+
+// *** 1. PROBLEM SOLVED: `Unexpected comma using map()`
+// template literals use the `toString()` method which
+// by default joins the returned array (by map) with
+// a `,`. To avoid this problem, you can use `join("")`
+
+// *** FUTURE IMPROVEMENTS:
+// separate functions into modules? or just the App to make it less scroll-y
+// refactor to make functions pure
