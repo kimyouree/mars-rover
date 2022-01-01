@@ -26,8 +26,14 @@ const App = (state) => {
         <header></header>
         <main>
             ${Greeting(store.user.name)}
-            <section>
-                <h3>Put things on the page!</h3>
+          <div class="tabs is-centered is-large">
+            <ul>
+              <li>Rovers</li>
+              <li class="is-active"><a>Curiosity</a></li>
+              <li><a>Opportunity</a></li>
+              <li><a>Spirit</a></li>
+            </ul>
+          </div>
                 <p>Here is an example section.</p>
                 <p>
                     One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
