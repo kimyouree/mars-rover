@@ -3,6 +3,8 @@ let store = {
   apod: "",
   rovers: ["Curiosity", "Opportunity", "Spirit"],
   rovers_info: null,
+  current_rover: null,
+  current_image: null,
 };
 
 // add our markup to the page
@@ -107,16 +109,35 @@ const ImageOfTheDay = (apod) => {
   }
 };
 
+// *** NEXT: why is this taking so long?
 const manifestGallery = (rovers_info) => {
   if (!rovers_info) {
     getManifests(store);
     return `<section class="section">Loading latest images...</section>`;
+  } else {
+    console.log(rovers_info, " === client rovers_info");
+    const {
+      curiosity: { curiosity_images },
+      opportunity,
+      spirit,
+    } = rovers_info;
+    // *** MAP A NEW CONFIG OBJ
+    // { curiosity: [{ photo }, { photo }, { photo }]}
+    shorted_list_of_photos = curiosity_images.slice(-3);
+    let curiosity_photos = shorted_list_of_photos
+      .map(
+        (p) => `
+        <div class="card">
+          <div class="card-image">
+            <figure class="image is-4by3">
+              <img src="${p.img_src}" alt="Placeholder image" />
+            </figure>
+          </div>
+        </div>`
+      )
+      .join("");
+    return curiosity_photos;
   }
-
-  return `
-    <h2>GALLERY</h2>
-    <img src="${rovers_info.curiosity.curiosity_images.photos[0].img_src}" />
-  `;
 };
 
 // ------------------------------------------------------  API CALLS
