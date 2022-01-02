@@ -22,7 +22,7 @@ const render = async (root, state) => {
 
 // create content
 const App = (state) => {
-  let { rovers, apod, rovers_info } = state;
+  let { apod, rovers_info } = state;
 
   return `
         <header></header>
@@ -80,13 +80,9 @@ const Greeting = (name) => {
 };
 
 // *** Example of a pure function that renders infomation requested from the backend
-// *** TRANSIENT BUG: apod.date is `undefined` sometimes - why?
+// *** TRANSIENT BUG: apod.date is `undefined` sometimes - does this happen repeatedly?
 const ImageOfTheDay = (apod) => {
   const today = new Date();
-  const photodate = new Date(apod.date);
-  // console.log(photodate.getDate(), today.getDate());
-
-  // console.log(photodate.getDate() === today.getDate());
   if (!apod || apod.date === today.getDate()) {
     getImageOfTheDay(store);
   }
@@ -106,7 +102,7 @@ const ImageOfTheDay = (apod) => {
   }
 };
 
-// *** NEXT: why is this taking so long?
+// *** NEXT: this takes long, is there a way to speed it up?
 const manifestGallery = (rovers_info) => {
   if (!rovers_info) {
     getManifests(store);
@@ -131,7 +127,7 @@ const manifestGallery = (rovers_info) => {
     let photos = truncated_images
       .map((rover_images) =>
         rover_images
-      .map(
+          .map(
             (photo) => `
         <div class="card">
           <div class="card-image">
@@ -188,5 +184,7 @@ const getManifests = (state) => {
 // a `,`. To avoid this problem, you can use `join("")`
 
 // *** FUTURE IMPROVEMENTS:
-// separate functions into modules? or just the App to make it less scroll-y
-// refactor to make functions pure
+// 1. separate functions into modules? or just the App to make it less scroll-y
+// 2. refactor to make functions pure
+// 3. refactor to make App cleaner (components only, no hard-coded elements)
+// 4. refactor to make `example content` a function call
