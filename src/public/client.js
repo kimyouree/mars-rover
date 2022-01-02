@@ -3,6 +3,8 @@ let store = {
   apod: "",
   rovers: ["Curiosity", "Opportunity", "Spirit"],
   rovers_info: null,
+  current_rover: null,
+  current_image: null,
 };
 
 // add our markup to the page
@@ -20,28 +22,38 @@ const render = async (root, state) => {
 
 // create content
 const App = (state) => {
-  let { rovers, apod, rovers_info } = state;
+  let { apod, rovers_info } = state;
 
   return `
         <header></header>
         <main>
-            ${Greeting(store.user.name)}
-            <section>
-                <h3>Put things on the page!</h3>
-                <p>Here is an example section.</p>
-                <p>
-                    One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
-                    the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
-                    This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
-                    applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
-                    explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
-                    but generally help with discoverability of relevant imagery.
-                </p>
-                ${ImageOfTheDay(apod)}
-            </section>
-            <section>
-              ${manifestGallery(rovers_info)}
-            </section>
+        <section class="section">
+          ${Greeting(store.user.name)}
+          <h2 class="bold subtitle has-background-link-dark">Gallery</h2>
+          
+          <div class="tabs is-centered is-large">
+            <ul>
+              <li>Rovers</li>
+              <li class="is-active"><a>Curiosity</a></li>
+              <li><a>Opportunity</a></li>
+              <li><a>Spirit</a></li>
+            </ul>
+          </div>
+          ${manifestGallery(rovers_info)}
+        </section>
+          <section class="section">
+            <h3 class="subtitle has-background-link-dark">Put things on the page!</h3>
+            <p>Here is an example section.</p>
+            <p>
+                One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
+                the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
+                This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
+                applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
+                explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
+                but generally help with discoverability of relevant imagery.
+            </p>
+            ${ImageOfTheDay(apod)}
+          </section>
         </main>
         <footer></footer>
     `;
@@ -58,23 +70,19 @@ window.addEventListener("load", () => {
 const Greeting = (name) => {
   if (name) {
     return `
-            <h1>Welcome, ${name}!</h1>
+            <h1 class="title">Welcome, ${name}!</h1>
         `;
   }
 
   return `
-        <h1>Hello!</h1>
+        <h1 class="title">Hello!</h1>
     `;
 };
 
 // *** Example of a pure function that renders infomation requested from the backend
-// *** TRANSIENT BUG: apod.date is `undefined` sometimes - why?
+// *** TRANSIENT BUG: apod.date is `undefined` sometimes - does this happen repeatedly?
 const ImageOfTheDay = (apod) => {
   const today = new Date();
-  const photodate = new Date(apod.date);
-  console.log(photodate.getDate(), today.getDate());
-
-  console.log(photodate.getDate() === today.getDate());
   if (!apod || apod.date === today.getDate()) {
     getImageOfTheDay(store);
   }
@@ -94,16 +102,54 @@ const ImageOfTheDay = (apod) => {
   }
 };
 
+// *** NEXT: this takes long, is there a way to speed it up?
 const manifestGallery = (rovers_info) => {
   if (!rovers_info) {
     getManifests(store);
-    console.log(store, " ==== rover_info inside if");
-  }
+    return `<section class="section">Loading latest images...</section>`;
+  } else {
+    console.log(rovers_info, " === client rovers_info");
+    // *** NEXT: hook up panel buttons to gallery images
+    // *** need to figure out a way to separate
+    const {
+      curiosity: { curiosity_images },
+      opportunity: { opportunity_images },
+      spirit: { spirit_images },
+    } = rovers_info;
 
-  return `
-    <h2>GALLERY</h2>
-    <img src="${rovers_info.curiosity.curiosity_images.photos[0].img_src}" />
-  `;
+    let truncated_images = [
+      curiosity_images,
+      opportunity_images,
+      spirit_images,
+    ].map((rover) => config_rover_images(rover));
+    console.log(truncated_images, " ==== all_photos");
+
+    let photos = truncated_images
+      .map((rover_images) =>
+        rover_images
+          .map(
+            (photo) => `
+        <div class="card">
+          <div class="card-image">
+            <figure class="image is-4by3">
+              <img src="${photo.img_src}" alt="Placeholder image" />
+            </figure>
+          </div>
+        </div>`
+          )
+          .join("")
+      )
+      .join("");
+    return photos;
+  }
+};
+
+// ------------------------------------------------------  HELPER FUNCTIONS
+
+// This caps the total photos per rover at 3 photos
+// this is to handle the inconsistent number of phots per rover.
+const config_rover_images = (rover_images) => {
+  return rover_images.slice(-3);
 };
 
 // ------------------------------------------------------  API CALLS
@@ -117,9 +163,11 @@ const getImageOfTheDay = (state) => {
     .then((apod) => {
       return updateStore(store, { apod: apod.image });
     });
+
+  // return data;
 };
 
-// Manifests API call
+// Photo gallery API call
 const getManifests = (state) => {
   let { rovers_info } = state;
 
@@ -129,3 +177,14 @@ const getManifests = (state) => {
       return updateStore(store, { rovers_info: rovers_info });
     });
 };
+
+// *** 1. PROBLEM SOLVED: `Unexpected comma using map()`
+// template literals use the `toString()` method which
+// by default joins the returned array (by map) with
+// a `,`. To avoid this problem, you can use `join("")`
+
+// *** FUTURE IMPROVEMENTS:
+// 1. separate functions into modules? or just the App to make it less scroll-y
+// 2. refactor to make functions pure
+// 3. refactor to make App cleaner (components only, no hard-coded elements)
+// 4. refactor to make `example content` a function call

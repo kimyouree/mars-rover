@@ -17,37 +17,62 @@ app.get("/photos", async (req, res) => {
   try {
     // *** FUTURE: is there a cleaner way to do this? seems wordy
     // would this be better in a loop - instead of hardcoding each rover's name per call?
+    // maybe a function that takes in the name of the rover, resulting in something like
+    // {
+    //   curiosity: {
+    //     manifest: manifest
+    //     photos: photos
+    //   },
+    //   ...
+    // }
     let curiosity_manifest = await fetch(
       `https://api.nasa.gov/mars-photos/api/v1/manifests/Curiosity/?api_key=${process.env.API_KEY}`
-    ).then((res) => {
-      return res.json();
-    });
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((json) => {
+        return json["photo_manifest"];
+      });
     let curiosity_images = await fetch(
-      `https://api.nasa.gov/mars-photos/api/v1/rovers/Curiosity/photos?earth_date=${curiosity_manifest["photo_manifest"]["max_date"]}&api_key=${process.env.API_KEY}`
-    ).then((res) => {
-      return res.json();
-    });
-    // .then((json) => console.log(json));
+      `https://api.nasa.gov/mars-photos/api/v1/rovers/Curiosity/photos?earth_date=${curiosity_manifest["max_date"]}&api_key=${process.env.API_KEY}`
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((json) => json["photos"]);
 
     let opportunity_manifest = await fetch(
       `https://api.nasa.gov/mars-photos/api/v1/manifests/Opportunity/?api_key=${process.env.API_KEY}`
-    ).then((res) => {
-      return res.json();
-    });
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((json) => {
+        return json["photo_manifest"];
+      });
+
     let opportunity_images = await fetch(
-      `https://api.nasa.gov/mars-photos/api/v1/rovers/Opportunity/photos?earth_date=${opportunity_manifest["photo_manifest"]["max_date"]}&api_key=${process.env.API_KEY}`
-    ).then((res) => res.json());
-    // .then((json) => console.log(json));
+      `https://api.nasa.gov/mars-photos/api/v1/rovers/Opportunity/photos?earth_date=${opportunity_manifest["max_date"]}&api_key=${process.env.API_KEY}`
+    )
+      .then((res) => res.json())
+      .then((json) => json["photos"]);
+
     let spirit_manifest = await fetch(
       `https://api.nasa.gov/mars-photos/api/v1/manifests/Spirit/?api_key=${process.env.API_KEY}`
-    ).then((res) => {
-      return res.json();
-    });
+    )
+      .then((res) => {
+        return res.json();
+      })
+      .then((json) => {
+        return json["photo_manifest"];
+      });
 
     let spirit_images = await fetch(
-      `https://api.nasa.gov/mars-photos/api/v1/rovers/Spirit/photos?earth_date=${spirit_manifest["photo_manifest"]["max_date"]}&api_key=${process.env.API_KEY}`
-    ).then((res) => res.json());
-    // .then((json) => console.log(json));
+      `https://api.nasa.gov/mars-photos/api/v1/rovers/Spirit/photos?earth_date=${spirit_manifest["max_date"]}&api_key=${process.env.API_KEY}`
+    )
+      .then((res) => res.json())
+      .then((json) => json["photos"]);
 
     rovers_info = {
       curiosity: {
@@ -86,5 +111,6 @@ app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 // BUG: response was `undefined` bc return keyword was missing
 // PROBLEM: making a concise set of GET requests;
-//    1 to fetch the max_date from the manifest endpoint
-//    2. to fetch the most recent photos from each rover using the max_date from the previous GET request
+//    1. is it a good idea to:
+//        put the fetching-logic in a separate function
+//        that is then passed the rover names `curiosity`, `opportunity` and `spirit`?
