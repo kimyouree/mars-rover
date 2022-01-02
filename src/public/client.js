@@ -113,28 +113,47 @@ const manifestGallery = (rovers_info) => {
     return `<section class="section">Loading latest images...</section>`;
   } else {
     console.log(rovers_info, " === client rovers_info");
+    // *** NEXT: hook up panel buttons to gallery images
+    // *** need to figure out a way to separate
     const {
       curiosity: { curiosity_images },
-      opportunity,
-      spirit,
+      opportunity: { opportunity_images },
+      spirit: { spirit_images },
     } = rovers_info;
-    // *** MAP A NEW CONFIG OBJ
-    // { curiosity: [{ photo }, { photo }, { photo }]}
-    shorted_list_of_photos = curiosity_images.slice(-3);
-    let curiosity_photos = shorted_list_of_photos
+
+    let truncated_images = [
+      curiosity_images,
+      opportunity_images,
+      spirit_images,
+    ].map((rover) => config_rover_images(rover));
+    console.log(truncated_images, " ==== all_photos");
+
+    let photos = truncated_images
+      .map((rover_images) =>
+        rover_images
       .map(
-        (p) => `
+            (photo) => `
         <div class="card">
           <div class="card-image">
             <figure class="image is-4by3">
-              <img src="${p.img_src}" alt="Placeholder image" />
+              <img src="${photo.img_src}" alt="Placeholder image" />
             </figure>
           </div>
         </div>`
+          )
+          .join("")
       )
       .join("");
-    return curiosity_photos;
+    return photos;
   }
+};
+
+// ------------------------------------------------------  HELPER FUNCTIONS
+
+// This caps the total photos per rover at 3 photos
+// this is to handle the inconsistent number of phots per rover.
+const config_rover_images = (rover_images) => {
+  return rover_images.slice(-3);
 };
 
 // ------------------------------------------------------  API CALLS
